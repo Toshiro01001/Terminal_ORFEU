@@ -25,6 +25,14 @@ body {
   animation: flicker 0.15s infinite;
 }
 
+.crt {
+  min-height: 100vh;
+}
+
+body {
+  min-height: 100vh;
+}
+
 @keyframes flicker {
   0% {
     opacity: 0.98;
@@ -65,3 +73,4 @@ input {
   outline: none;
   flex: 1;
 }
+
