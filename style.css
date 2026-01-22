@@ -52,6 +52,7 @@ body {
 
 pre {
   white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .input-line {
@@ -73,5 +74,6 @@ input {
   outline: none;
   flex: 1;
 }
+
 
 
