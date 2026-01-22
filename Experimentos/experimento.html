@@ -28,8 +28,25 @@ PARA PRESERVAÇÃO DA ORDEM OPERACIONAL.
       <a href="../index.html" style="color:#ffa94d;">
         &lt; RETORNAR AO TERMINAL PRINCIPAL
       </a>
+      <br><br>
+      <a href="#" id="olhosLink" style="color:#3a7f3a; text-decoration:none;">
+        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
     </div>
   </div>
+  <script>
+    document.getElementById("olhosLink").addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const senha = prompt("AUTORIZAÇÃO NECESSÁRIA:");
+
+      if (senha === "E6Y6E6S") {
+        window.location.href = "olhos.html";
+      } else {
+        alert("ACESSO NEGADO.");
+      }
+    });
+  </script>
 </body>
+
 
 </html>
