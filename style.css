@@ -1,78 +1,259 @@
 @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 
+/* ============================================================
+   ORFEU // TERMINAL CRT
+   Estética: monitor de tubo fosforado verde, sinal degradado.
+   ============================================================ */
+
+:root {
+  --bg: #020b05;
+  --phosphor: #4cff4c;
+  --phosphor-bright: #9dffb6;
+  --phosphor-dim: #2bbf5a;
+  --amber: #ffb454;
+  --glow: rgba(76, 255, 76, 0.55);
+  --glow-soft: rgba(76, 255, 76, 0.20);
+  --scanline: rgba(0, 0, 0, 0.30);
+}
+
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
-  margin: 0;
-  background: #020b05;
-  font-family: "VT323", monospace;
-  color: #4cff4c;
-  min-height: 100vh;
+  height: 100%;
 }
 
+body {
+  margin: 0;
+  /* leve curvatura de brilho do centro pras bordas escuras */
+  background: radial-gradient(ellipse at center, #05160b 0%, #020b05 70%, #000000 100%);
+  font-family: "VT323", monospace;
+  color: var(--phosphor);
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: 0.4px;
+  /* brilho de fósforo padrão em todo texto */
+  text-shadow:
+    0 0 1px var(--glow),
+    0 0 7px var(--glow-soft);
+}
+
+/* ------------------------------------------------------------
+   CONTEÚDO DA TELA
+   ------------------------------------------------------------ */
 .crt {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-height: 100vh;
-  padding: 20px;
-  background: repeating-linear-gradient(
-    rgba(0, 255, 0, 0.03),
-    rgba(0, 255, 0, 0.03) 1px,
-    transparent 2px,
-    transparent 4px
-  );
-  animation: flicker 0.15s infinite;
+  padding: clamp(16px, 4vw, 48px);
+  /* ligar a tela: varredura de power-on */
+  animation: power-on 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) 1;
+  transform-origin: center;
 }
 
-.crt {
-  min-height: 100vh;
-}
-
-body {
-  min-height: 100vh;
-}
-
-@keyframes flicker {
+@keyframes power-on {
   0% {
-    opacity: 0.98;
+    transform: scale(1.06, 0.004);
+    filter: brightness(7) blur(1.5px);
+    opacity: 0;
   }
-  50% {
+  35% {
+    transform: scale(1, 0.02);
+    filter: brightness(4);
     opacity: 1;
   }
+  60% {
+    transform: scale(1, 1);
+    filter: brightness(2);
+  }
   100% {
-    opacity: 0.97;
+    transform: scale(1, 1);
+    filter: brightness(1);
+    opacity: 1;
   }
 }
 
 .terminal {
   max-width: 900px;
-  margin: auto;
+  margin: 0 auto;
+  /* tremulação sutil de brilho do tubo, depois do power-on */
+  animation: flicker 5.5s infinite;
+  animation-delay: 1.4s;
 }
 
+@keyframes flicker {
+  0%,
+  100% { opacity: 0.98; }
+  7%   { opacity: 0.92; }
+  9%   { opacity: 0.99; }
+  41%  { opacity: 0.97; }
+  43%  { opacity: 0.86; }
+  45%  { opacity: 0.99; }
+  82%  { opacity: 0.95; }
+  84%  { opacity: 0.99; }
+}
+
+/* ------------------------------------------------------------
+   CAMADAS DE OVERLAY (fixas, não capturam clique)
+   z: ruído < vinheta < scanlines < barra de varredura
+   ------------------------------------------------------------ */
+
+/* ruído / granulado de sinal */
+.crt::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9996;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.45s steps(3) infinite;
+}
+
+@keyframes grain {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-2%, 1%); }
+  66%  { transform: translate(1%, -2%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* barra de varredura que desce lentamente */
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(140, 255, 170, 0) 0%,
+    rgba(140, 255, 170, 0.06) 50%,
+    rgba(140, 255, 170, 0) 100%
+  );
+  background-size: 100% 26%;
+  background-repeat: no-repeat;
+  animation: scanbar 8s linear infinite;
+}
+
+@keyframes scanbar {
+  0%   { background-position: 0 -30%; }
+  100% { background-position: 0 130%; }
+}
+
+/* scanlines horizontais */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    var(--scanline) 3px,
+    var(--scanline) 4px
+  );
+}
+
+/* vinheta + escurecimento das bordas (vidro curvo) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 52%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  box-shadow: inset 0 0 140px 28px rgba(0, 0, 0, 0.9);
+}
+
+/* ------------------------------------------------------------
+   TIPOGRAFIA DO TERMINAL
+   ------------------------------------------------------------ */
 pre {
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: clamp(16px, 2.4vw, 22px);
+  line-height: 1.35;
+  margin: 0 0 0.8em;
 }
 
+/* linha de entrada de comando */
 .input-line {
   display: flex;
   align-items: center;
+  font-size: clamp(16px, 2.4vw, 22px);
 }
 
 .prompt {
-  margin-right: 5px;
-  color: #3aff3a;
+  margin-right: 8px;
+  color: var(--phosphor-bright);
+  text-shadow:
+    0 0 2px var(--phosphor),
+    0 0 9px var(--glow);
 }
 
 input {
   background: transparent;
   border: none;
-  color: #4cff4c;
+  color: var(--phosphor);
   font-family: inherit;
-  font-size: 22px;
+  font-size: inherit;
   outline: none;
   flex: 1;
+  min-width: 0;
+  caret-color: var(--phosphor-bright);
+  text-shadow: inherit;
+}
+
+/* ------------------------------------------------------------
+   LINKS
+   ------------------------------------------------------------ */
+.return-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--amber);
+  text-decoration: none;
+  text-shadow:
+    0 0 2px rgba(255, 180, 84, 0.7),
+    0 0 9px rgba(255, 180, 84, 0.3);
+  transition: filter 0.15s ease, letter-spacing 0.15s ease;
+}
+
+.return-link:hover,
+.return-link:focus-visible {
+  filter: brightness(1.4);
+  letter-spacing: 1px;
+  outline: none;
+}
+
+/* bloco oculto (mantido discreto de propósito) */
+.hidden-link {
+  display: inline-block;
+  margin-top: 18px;
+  color: #2f6b2f;
+  text-decoration: none;
+  user-select: none;
+  text-shadow: none;
+}
+
+/* ------------------------------------------------------------
+   ACESSIBILIDADE: respeitar quem prefere menos movimento
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  .crt,
+  .terminal,
+  .crt::before,
+  .crt::after {
+    animation: none !important;
+  }
 }
 
 
