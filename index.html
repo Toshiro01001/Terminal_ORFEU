@@ -10,27 +10,33 @@
 
 
 <body>
-
   <div class="crt">
     <div class="terminal">
-      <pre id="output">
-ORFEU - DEPARTAMENTO DE ORGANIZAÇÃO, REAJUSTE E FORÇA EXPERIMENTAL UNIFICADA
+      <pre id="output">ORFEU - DEPARTAMENTO DE ORGANIZAÇÃO, REAJUSTE E FORÇA EXPERIMENTAL UNIFICADA
 STATUS: OPERACIONAL
-DIGITE "help" PARA LISTA DE COMANDOS
 ------------------------------------------------------------
-    </pre>
+COMANDOS DISPONÍVEIS:
+ls                  - listar diretórios
+open arquivos       - acessar ARQUIVOS
+open experimentos   - acessar EXPERIMENTOS
+open cobaias        - acessar COBAIAS
+clear               - limpar terminal
+
+DIRETÓRIOS DISPONÍVEIS:
+[ ARQUIVOS ]
+[ EXPERIMENTOS ]
+[ COBAIAS ]
+------------------------------------------------------------</pre>
 
       <div class="input-line">
         <span class="prompt">ORFEU&gt;</span>
-        <input type="text" id="commandInput" autofocus />
+        <input type="text" id="commandInput" autocomplete="off" autocapitalize="off" spellcheck="false" autofocus />
       </div>
     </div>
   </div>
 
   <script src="script.js"></script>
-
 </body>
-
 
 </html>
 
