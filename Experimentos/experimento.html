@@ -33,17 +33,23 @@ PARA PRESERVAÇÃO DA ORDEM OPERACIONAL.
     </div>
   </div>
 
+  <script src="olhos-cifrado.js"></script>
+  <script src="cofre.js"></script>
   <script>
     document.getElementById("olhosLink").addEventListener("click", function (e) {
       e.preventDefault();
 
       const senha = prompt("AUTORIZAÇÃO NECESSÁRIA:");
+      if (senha === null) return;
 
-      if (senha === "E6Y6E6S") {
-        window.location.href = "olhos.html";
-      } else {
-        alert("ACESSO NEGADO.");
-      }
+      abrirOlhos(senha).then(function (conteudo) {
+        if (conteudo) {
+          try { sessionStorage.setItem("orfeu:olhos", senha); } catch (erro) {}
+          window.location.href = "olhos.html";
+        } else {
+          alert("ACESSO NEGADO.");
+        }
+      });
     });
   </script>
 </body>
